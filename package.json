@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "shopify hydrogen dev --codegen",
-    "build": "shopify hydrogen build --codegen && xcopy /E /I /Y dist .vercel\\output",
+    "build": "shopify hydrogen build --codegen && mkdir -p .vercel/output && cp -r dist/* .vercel/output/",
     "preview": "npm run build && shopify hydrogen preview",
     "e2e": "npx playwright test",
     "e2e:ui": "npx playwright test --ui",
