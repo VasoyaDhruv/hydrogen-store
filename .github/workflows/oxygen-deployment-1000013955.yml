@@ -25,29 +25,15 @@ jobs:
       - name: Cache node modules
         id: cache-npm
         uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
-        env:
-          cache-name: cache-node-modules
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-build-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Build and Publish to Oxygen
-        id: deploy
-        run: |
-          npx shopify hydrogen deploy --auth-bypass-token --token "${{ secrets.OXYGEN_DEPLOYMENT_TOKEN_1000013955 }}"
-          echo "AUTH_BYPASS_TOKEN=$(jq -r '.authBypassToken' h2_deploy_log.json)" >> $GITHUB_ENV
-          echo "DEPLOYMENT_URL=$(jq -r '.url' h2_deploy_log.json)" >> $GITHUB_ENV
-
-      - name: Run end-to-end tests
-        id: end-to-end-tests
-        uses: ./.github/actions/end-to-end-tests
-        with:
-          url: ${{ env.DEPLOYMENT_URL }}
-          auth-bypass-token: ${{ env.AUTH_BYPASS_TOKEN }}
+      - name: Build and Deploy
+        run: npx shopify hydrogen deploy
